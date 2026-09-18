@@ -16,6 +16,7 @@ class ExpertSystem:
         self.objetivoActual = None
         self.nombreAlumno = "Jorge Sánchez Cerezo" #IMPORTANTE: Cambia el valor de esta propiedad por tu nombre completo
         self.inicio = True
+        self.orientarse = False
 
     #   función setObjetivo
     #   Almacena en la propiedad objetivoActual el objetivo al que tiene que moverse el robot
@@ -28,7 +29,7 @@ class ExpertSystem:
     #   Devuelve una tupla con la velocidad lineal y angular que se
     #   quiere dar al robot
 
-    def orientarse(self, difx, dify):
+    def funcionangulo(self, difx, dify):
         #Con trigonometria básica, calculamos el angulo (tan = dify/dix): angulo = arctan dify difx
         angulo = math.atan2(dify, difx) #Como esta en radianes, vamos a pasarlo a grados
         angulo_grados = angulo * 180/math.pi
@@ -38,27 +39,45 @@ class ExpertSystem:
         inicio_obj = self.objetivoActual.getInicio()
         xiniobj = inicio_obj[0]
         yiniobj = inicio_obj[1]
-
+        #Primero orientarse, cuando esta alineado con el objetivo avance
+        
         difx = xiniobj - xrobot
         dify = yiniobj - yrobot 
         print(difx+dify)
         #girar robot hasta alinearse con el punto
-        angulo = self.orientarse(difx, dify)
-        #print(angulo)
-        #print(orientacion)
-        x = 2
-        y = 0.5
-        if poseRobot[2] >= (angulo-5):
-            x = 2
-            y = -0.1
+        angulo = self.funcionangulo(difx, dify)
         estado_inicio = True
 
+        x = 2
+        y = 0
+        #INICIO
+        while self.orientarse and (poseRobot[2] >=angulo + 10 or poseRobot[2] <= angulo - 10):
+            #ver a que lado debe girarse:
+            #if derecha:
+            x = 2
+            y = -0.75
+            #if izquierda:
+            x = 2
+            y = 0.75
+            if (poseRobot[2] <= angulo +10) or (poseRobot[2] >= angulo -10):
+                self.orientarse = False
+
+        #Girar derecha
+        if poseRobot[2] >= (angulo-5):
+            x = 2
+            y = -0.15
+        #Girar izquierda
+        if poseRobot[2] <= angulo+5:
+            x = 2
+            y = 0.15
+        
         if abs(difx)+abs(dify)<= 0.25:
             estado_inicio = False
+            self.orientarse = True
 
         return x, y, estado_inicio
 
-    '''
+    
     def segmentofinal(self, xrobot, yrobot, orientacion, poseRobot):
         x, y = 0, 0
         fin_obj = self.objetivoActual.getFin()
@@ -68,29 +87,42 @@ class ExpertSystem:
         difx = xfinobj - xrobot
         dify = yfinobj - yrobot 
         print(difx+dify)
-        angulo = self.orientarse(difx, dify)
+        angulo = self.funcionangulo(difx, dify)
         print(angulo)
         print(orientacion)
 
 
-        if abs(difx)+abs(dify) >= 65 and poseRobot[2] <= angulo + 5:
-            x = 1
-            y = -1
-        else:
-            if poseRobot[2] >= (angulo):
-                x = 3
-                y = -0.2
-            estado_inicio = False
+        #INICIO:
+        while self.orientarse and (poseRobot[2] >=angulo + 10 or poseRobot[2] <= angulo - 10):
+            #ver a que lado debe girarse:
+            #if derecha:
+            x = 2
+            y = -0.75
+            #if izquierda:
+            x = 2
+            y = 0.75
+            if (poseRobot[2] <= angulo +10) or (poseRobot[2] >= angulo -10):
+                self.orientarse = False
 
-            if abs(difx)+abs(dify)<= 0.5:
-                estado_inicio = True
+        if poseRobot[2] >= (angulo-5):
+            x = 2
+            y = -0.15
+        #Girar izquierda
+        if poseRobot[2] <= angulo+5:
+            x = 2
+            y = 0.15
+
+        if abs(difx)+abs(dify)<= 0.5:
+            estado_inicio = True
         return x, y, estado_inicio
-        '''
+    
 
     def tomarDecision(self, poseRobot):
+        x , y = 0 , 0
         xrobot = poseRobot[0]
         yrobot = poseRobot[1]
         orientacion = poseRobot[2]
+
         if self.inicio:
             x, y, self.inicio = self.segmentoinicio(xrobot, yrobot, orientacion, poseRobot)
         else:
