@@ -28,19 +28,19 @@ class ExpertSystem:
     #   Recibe una tupla de 3 valores con la pose del robot: posición X, posición Y, orientación
     #   Devuelve una tupla con la velocidad lineal y angular que se
     #   quiere dar al robot
-
+    
     def funcionangulo(self, difx, dify):
         #Con trigonometria básica, calculamos el angulo (tan = dify/dix): angulo = arctan dify difx
         angulo = math.atan2(dify, difx) #Como esta en radianes, vamos a pasarlo a grados
-        angulo_grados = angulo * 180/math.pi
-        return angulo_grados
-
+        angulo_objetivo = angulo * 180/math.pi
+        return angulo_objetivo
+        """
     def segmentoinicio(self, xrobot, yrobot, orientacion, poseRobot):
         inicio_obj = self.objetivoActual.getInicio()
         xiniobj = inicio_obj[0]
         yiniobj = inicio_obj[1]
         #Primero orientarse, cuando esta alineado con el objetivo avance
-        
+    
         difx = xiniobj - xrobot
         dify = yiniobj - yrobot 
         print(difx+dify)
@@ -51,7 +51,7 @@ class ExpertSystem:
         x = 2
         y = 0
         #INICIO
-        while self.orientarse and (poseRobot[2] >=angulo + 10 or poseRobot[2] <= angulo - 10):
+        while self.orientarse and (orientacion >=angulo + 10 or orientacion <= angulo - 10):
             #ver a que lado debe girarse:
             #if derecha:
             x = 2
@@ -65,11 +65,11 @@ class ExpertSystem:
         #Girar derecha
         if poseRobot[2] >= (angulo-5):
             x = 2
-            y = -0.15
+            y = -0.3
         #Girar izquierda
         if poseRobot[2] <= angulo+5:
             x = 2
-            y = 0.15
+            y = 0.3
         
         if abs(difx)+abs(dify)<= 0.25:
             estado_inicio = False
@@ -93,7 +93,7 @@ class ExpertSystem:
 
 
         #INICIO:
-        while self.orientarse and (poseRobot[2] >=angulo + 10 or poseRobot[2] <= angulo - 10):
+        while self.orientarse and (orientacion >=angulo + 10 or poseRobot[2] <= angulo - 10):
             #ver a que lado debe girarse:
             #if derecha:
             x = 2
@@ -101,14 +101,14 @@ class ExpertSystem:
             #if izquierda:
             x = 2
             y = 0.75
-            if (poseRobot[2] <= angulo +10) or (poseRobot[2] >= angulo -10):
+            if (orientacion <= angulo +10) or (orientacion >= angulo -10):
                 self.orientarse = False
 
-        if poseRobot[2] >= (angulo-5):
+        if orientacion>= (angulo-5):
             x = 2
             y = -0.15
         #Girar izquierda
-        if poseRobot[2] <= angulo+5:
+        if orientacion <= angulo+5:
             x = 2
             y = 0.15
 
@@ -116,16 +116,54 @@ class ExpertSystem:
             estado_inicio = True
         return x, y, estado_inicio
     
-
+    """
     def tomarDecision(self, poseRobot):
+        
+        """
         x , y = 0 , 0
+        """ 
         xrobot = poseRobot[0]
         yrobot = poseRobot[1]
         orientacion = poseRobot[2]
+        print()
+        inicio_obj = self.objetivoActual.getInicio()
+        xiniobj = inicio_obj[0]
+        yiniobj = inicio_obj[1]
+    
+        difx = xiniobj - xrobot
+        dify = yiniobj - yrobot 
+        angulo_objetivo = math.degrees(math.atan2(dify, difx)) #Como esta en radianes, vamos a pasarlo a grados
+        print(angulo_objetivo)
 
+
+
+        #Ahora lo que queremos es calcular la diferencia, es decir, el angulo objetivo le restamos nuestra orientacion, y asi obtenemos lo que debe girar nuestro robot
+        diferencia  = angulo_objetivo - orientacion
+        while diferencia > 180:
+            diferencia -= 360 # si ha dado mas de media vuelta en sentido horario, es decir, mas alla de los 180 grados, lo ponemos en -180, y asi lo situamos como que esta en la parte izquierda del robot (zona negativa | zona positiva) 
+        while diferencia < -180:
+            diferncia += 360
+
+        print(diferencia)
+
+        """
         if self.inicio:
             x, y, self.inicio = self.segmentoinicio(xrobot, yrobot, orientacion, poseRobot)
         else:
             x, y, self.inicio = self.segmentofinal(xrobot, yrobot, orientacion, poseRobot)
         return (x , y)
-    
+    """
+        return 0, -1
+
+
+
+
+
+
+
+
+    #NOTAS
+
+        #Me doy cuenta dce que el angulo del robot lo imprimo en grados (orientarse (que es poseRobot[2])), por lo tanto
+        #para girar en sentido horario hay que usar el menos, por lo que el angulo bueno (el ue queremos en 360), hay que pillar el resto de dividir entre 360:
+        # ejemplo -- 0 grados mira hacia arriba, 180 abajo, 360 arriba otra vez, por lo que lo reseteamos a 0, pero tenemos que calcular como que el 0 esta igual de cerca del 270 que del 90, por lo que if orientacion
