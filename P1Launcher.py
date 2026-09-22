@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 '''
  ' Código principal de la aplicación para la práctica 1 de RyRDC
  ' No puede ser modificado por los alumnos
@@ -252,7 +251,6 @@ while not programQuit:
 
 # this is important, run this if the pygame window does not want to close
 pygame.quit()
-=======
 '''
  ' Código principal de la aplicación para la práctica 1 de RyRDC
  ' No puede ser modificado por los alumnos
@@ -506,4 +504,3 @@ while not programQuit:
 
 # this is important, run this if the pygame window does not want to close
 pygame.quit()
->>>>>>> 19d2e5b5f07734f07b2068d3f576a2682751c2d1
